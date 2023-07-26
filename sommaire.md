@@ -6,7 +6,7 @@
     - ### [Pipeline pattern](/design_pattern/part_3/part_3.md)
 - ## [Principles](/principles/part_1/part_1.md)
     - ### [Introduction](/principles/part_1/part_1.md)
-    - ### [Coupling](/principles/part_2/part_2.md)
+    - ### [Cohésion](/principles/part_2/part_2.md)
     - ### [Coupling](/principles/part_3/part_3.md)
     - ### [Simplicité](/principles/part_4/part_4.md)
     - ### [S.O.L.I.D](/principles/part_5/part_5.md)
