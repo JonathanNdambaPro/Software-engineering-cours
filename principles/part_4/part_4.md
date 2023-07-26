@@ -1,250 +1,322 @@
-﻿# S.O.L.I.D
+﻿# Simplicité
 
-Les principe S.O.L.I.D sont des règles qui permettent d’augmenter la cohésion et de réduire le coupling, nous n’allons pas voir des implémentations en exemple (les cours précédent et celui sur les designs patterns sont suffisant pour appliquer ces règles)
+Le but de tout développeur est de faire en sorte que son code soit simple possible,
 
-## Principe de responsabilité unique (SRP) : 
-Une classe ne devrait avoir qu'une seule raison de changer. Cela signifie que chaque classe doit se concentrer sur une tâche spécifique et ne pas avoir plusieurs responsabilités. L'avantage de suivre ce principe est que les classes deviennent plus cohérentes et plus faciles à comprendre, ce qui facilite la maintenance du code.
+la réduction de coupling, l’augmentation de cohésion, tout ce que nous avons vu jusqu’à présent nous dirige vers ce paradigme.
 
-```py
-class User:
-    def __init__(self, name: str):
-        self.name = name
+Ici, nous allons voir quelques principes simples qui vont vous aider à écrire du code simple, compréhensible et maintenable.
 
-    def get_user_name(self):
-        return self.name
+## DRY (Don’t repeat yourself)
 
-    def save_user(self, user):
-        pass  # logique pour sauvegarder l'utilisateur dans une base de données
-```
+Ce concept parle de lui-même, si vous code présent beaucoup de duplication/répétition on doit trouver un moyen de le réduire.
 
-Ici, la classe User a deux responsabilités. Elle est responsable de la gestion de l'utilisateur et aussi de la sauvegarde de l'utilisateur dans la base de données. C'est une violation du Principe de Responsabilité Unique.
+[code before](https://github.com/JonathanNdambaPro/code_adanced_course/blob/main/introduction/simplicity/DRY/dry_before.py)
 
 ```py
-class User:
-    def __init__(self, name: str):
-        self.name = name
-
-    def get_user_name(self):
-        return self.name
-
-class UserDatabase:
-    def save_user(self, user: User):
-        pass  # logique pour sauvegarder l'utilisateur dans une base de données
-```
-
-Maintenant, la classe User est responsable uniquement de la gestion de l'utilisateur et la classe UserDatabase est responsable de la gestion de la base de données. Chacune a une seule responsabilité, ce qui respecte le Principe de Responsabilité Unique.
-
-## Principe d'ouverture/fermeture (OCP)
- Les entités logicielles (classes, modules, etc.) devraient être ouvertes pour l'extension, mais fermées pour la modification. Cela signifie qu'il est possible d'ajouter de nouvelles fonctionnalités sans avoir à modifier le code existant. L'avantage de suivre ce principe est que les modifications de code sont minimisées, ce qui permet de limiter les risques de régressions et de bugs.
-
-```py
-class Rectangle:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
+def read_vehicle_type() -> str:
+    vehicle_types = ["vw", "bmw", "tesla"]
+    vehicle_type = ""
+    while vehicle_type not in vehicle_types:
+        vehicle_type = input(
+            f"What type of vehicle would you like to rent ({', '.join(vehicle_types)})? "
+        )
+    return vehicle_type
 
 
-def total_area(rectangles):
-    total = 0
-    for rectangle in rectangles:
-        total += rectangle.width * rectangle.height
-    return total
-```
-
-Cette approche fonctionne bien pour les rectangles, mais suppose maintenant que nous voulions ajouter une autre forme, comme un cercle. Nous devrions modifier la fonction total_area pour gérer cette nouvelle forme, ce qui viole le principe OCP.
-
-```py
-from abc import ABC, abstractmethod
-import math
-
-class Shape(ABC):
-    @abstractmethod
-    def area(self):
-        pass
+def read_vehicle_color() -> str:
+    vehicle_colors = ["black", "red", "blue"]
+    vehicle_color = ""
+    while vehicle_color not in vehicle_colors:
+        vehicle_color = input(
+            f"What color vehicle would you like to rent ({', '.join(vehicle_colors)})? "
+        )
+    return vehicle_color
 
 
-class Rectangle(Shape):
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-
-    def area(self):
-        return self.width * self.height
-
-
-class Circle(Shape):
-    def __init__(self, radius):
-        self.radius = radius
-
-    def area(self):
-        return math.pi * (self.radius ** 2)
+def read_rent_days() -> int:
+    """Reads the number of days from the user."""
+    days = 0
+    while days < 1:
+        days_str = input(
+            "How many days would you like to rent the vehicle? (enter a positive number) "
+        )
+        try:
+            days = int(days_str)
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+    return days
 
 
-def total_area(shapes):
-    return sum(shape.area() for shape in shapes)
-```
+def read_kms_to_drive() -> int:
+    """Reads the number of kilometers to drive from the user."""
+    km = 0
+    while km < 1:
+        km_str = input(
+            "How many kilometers would you like to drive (enter a positive number)? "
+        )
+        try:
+            km = int(km_str)
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+    return km
 
-Maintenant, si nous voulons ajouter une nouvelle forme, nous n'avons qu'à créer une nouvelle classe qui hérite de Shape et à implémenter la méthode area. Il n'est pas nécessaire de modifier la fonction total_area, ce qui respecte le principe OCP.
+
+def main():
+
+    vehicle_type = read_vehicle_type()
+
+    vehicle_color = read_vehicle_color()
+
+    days = read_rent_days()
+
+    kms = read_kms_to_drive()
+
+    print(
+        f"You rented a {vehicle_type} vehicle, color {vehicle_color}, for {days} days",
+        f"and you're allowed to drive {kms} kilometers.",
+    )
 
 
+if __name__ == "__main__":
+    main()
+``` 
 
+Globalement ces fonction sont très redondantes, les fonction font quasiment toute la même chose, mais avec des valeur qui diffère
 
-
-
-
-
-
-## Principe de substitution de Liskov (LSP)
-Les objets d'une classe dérivée doivent pouvoir être utilisés comme des objets de la classe de base sans que le comportement ne change. Cela signifie que les classes dérivées ne doivent pas avoir un comportement différent de celui de la classe de base, mais doivent plutôt étendre ou spécialiser son comportement. L'avantage de suivre ce principe est que cela facilite la réutilisation du code et rend les classes plus génériques.
+[Code after](https://github.com/JonathanNdambaPro/code_adanced_course/blob/main/introduction/coupling/order_after.py)
 
 ```py
-class Oiseau:
-    def voler(self):
-        return "Je peux voler!"
-
-class Pingouin(Oiseau):
-    def voler(self):
-        return "Je ne peux pas voler!"
-
-```
-
-Dans cet exemple, le principe de Liskov est violé car si une fonction attend un Oiseau et que vous lui passez un Pingouin, la fonction s'attend à ce que l'oiseau puisse voler, mais cela ne sera pas le cas avec un Pingouin.
-
-```py
-class Oiseau:
-    def voler(self):
-        pass
-
-class OiseauVolant(Oiseau):
-    def voler(self):
-        return "Je peux voler!"
-
-class Pingouin(Oiseau):
-    pass
-```
-
-Dans cette correction, nous avons introduit une nouvelle classe, OiseauVolant, qui hérite de la classe Oiseau. Cette classe représente spécifiquement les oiseaux qui peuvent voler. La classe Pingouin hérite toujours de la classe Oiseau, mais elle n'essaie pas de redéfinir la méthode voler. Ainsi, si une fonction attend un OiseauVolant, elle sait qu'elle obtiendra une instance qui peut voler. Si elle attend un Oiseau, elle sait qu'elle pourrait obtenir un OiseauVolant ou un Pingouin, et donc elle ne doit pas supposer que l'instance peut voler.
-
-## Principe de ségrégation d'interface (ISP)
-
- Les interfaces doivent être spécifiques aux besoins des clients. Cela signifie que les interfaces doivent être divisées en plusieurs interfaces plus petites et spécialisées plutôt que de créer une seule interface qui satisfait tous les besoins des clients. L'avantage de suivre ce principe est que cela rend les interfaces plus cohérentes et plus faciles à utiliser pour les clients.
-
- ```py
-from abc import ABC, abstractmethod
-
-class MultiFunctionDevice(ABC):
-    @abstractmethod
-    def print(self, document): pass
-
-    @abstractmethod
-    def scan(self, document): pass
-
-    @abstractmethod
-    def fax(self, document): pass
+from enum import Enum, auto
 
 
-class OldFashionedPrinter(MultiFunctionDevice):
-    def print(self, document):
-        # okay - print stuff
-        pass
+class PaymentStatus(Enum):
+    """Payment status"""
 
-    def scan(self, document):
-        raise NotImplementedError("Printer cannot scan!")
-
-    def fax(self, document):
-        raise NotImplementedError("Printer cannot fax!")
-
-```
-
-Dans cet exemple, OldFashionedPrinter est forcé d'implémenter scan et fax qui ne sont pas nécessaires, ce qui viole le principe ISP.
-
-```py
-class Printer:
-    def print(self, document):
-        pass
+    OPEN = auto()
+    PAID = auto()
 
 
-class Scanner:
-    def scan(self, document):
-        pass
-
-
-class FaxMachine:
-    def fax(self, document):
-        pass
-
-
-class MultiFunctionDevice(Printer, Scanner, FaxMachine):
-    pass
-
-
-class OldFashionedPrinter(Printer):
-    def print(self, document):
-        # okay - print stuff
-        pass
-
-```
-
-Maintenant, OldFashionedPrinter n'est plus obligé d'implémenter les méthodes scan et fax qu'il n'utilise pas, ce qui est conforme au principe ISP.
-
-Note : En python il n’y a pas d’interface à proprement parler, elles sont “équivalentes” aux classes abstraites (ou encore protocol) par conséquent ce principe ressemble grandement au principe de responsabilité unique (SRP)
-
-## Principe d'inversion de dépendance (DIP)
-Les modules de haut niveau ne doivent pas dépendre de modules de bas niveau, mais plutôt de leur abstractions. Cela signifie que les dépendances entre les classes doivent être inversées, de sorte que les classes de haut niveau dépendent des abstractions, plutôt que des classes de bas niveau. L'avantage de suivre ce principe est que cela permet de rendre le code plus modulaire, plus flexible et plus facile à tester.
-
-- Les modules de haut niveau ne devraient pas dépendre des modules de bas niveau. Les deux devraient dépendre des abstractions.
-- Les abstractions ne devraient pas dépendre des détails. Les détails devraient dépendre des abstractions.
-
-```py
-class MySQLDatabase:
-    def save(self, data):
-        # code pour sauvegarder des données dans une base de données MySQL
-
-class DataProcessor:
+class Order:
     def __init__(self):
-        self.database = MySQLDatabase()
+        self.items: list[str] = []
+        self.quantities: list[int] = []
+        self.prices: list[int] = []
+        self.status: str = "open"
 
-    def process(self, data):
-        # code pour traiter des données
-        self.database.save(data)
+    def add_item(self, name: str, quantity: int, price: int) -> None:
+        self.items.append(name)
+        self.quantities.append(quantity)
+        self.prices.append(price)
+
+    @property
+    def total_price(self) -> int:
+        total = 0
+        for i in range(len(self.prices)):
+            total += self.quantities[i] * self.prices[i]
+        return total
+
+
+def main() -> None:
+    order = Order()
+    order.add_item("Keyboard", 1, 5000)
+    order.add_item("SSD", 1, 15000)
+    order.add_item("USB cable", 2, 500)
+
+    print(f"The total price is: ${(order.total_price / 100):.2f}.")
+
+
+if __name__ == "__main__":
+    main()
 ```
+Étapes :
 
-Dans cet exemple, la classe DataProcessor dépend directement de la classe MySQLDatabase. Si nous décidons de changer de base de données (par exemple, passer à une base de données PostgreSQL), nous devons modifier la classe DataProcessor, ce qui viole le principe de l'ouverture/fermeture.
+- les fonctions read\_vehicule\_type() et read\_vehicule\_color() sont des fonctions qui font la même chose à part le message dans input et leur choix, en mettant le message et les choix dans des paramètres, on a la fonction read\_choice() qui est assez générique pour traiter les deux.
+- C’est exactement la même chose les fonctions read\_rent\_days() et read\_kms\_drive() il suffit de stocker le message dans input et les valeurs numériques (days, kms) dans une variable numérique et la fonction read\_int() est suffisamment générique.
+
+## KISS (Keep It simple stupid)
+
+Le nom est choc est, c'est volontaire, le principe KISS vous exige de coder de la manière la plus simple possible.
+
+[code before](https://github.com/JonathanNdambaPro/code_adanced_course/blob/main/introduction/simplicity/KISS/kiss_before.py)
 
 ```py
-from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from enum import Enum, auto
+from typing import Protocol
 
-class Database(ABC):
-    @abstractmethod
-    def save(self, data):
-        pass
 
-class MySQLDatabase(Database):
-    def save(self, data):
-        # code pour sauvegarder des données dans une base de données MySQL
+class PaymentStatus(Enum):
+    """Payment status"""
 
-class PostgreSQLDatabase(Database):
-    def save(self, data):
-        # code pour sauvegarder des données dans une base de données PostgreSQL
+    OPEN = auto()
+    PAID = auto()
 
-class DataProcessor:
-    def __init__(self, database: Database):
-        self.database = database
 
-    def process(self, data):
-        # code pour traiter des données
-        self.database.save(data)
+@dataclass
+class LineItem:
+    name: str
+    quantity: int
+    price: int
 
+    @property
+    def total_price(self) -> int:
+        return self.quantity * self.price
+```
+cette data classe prend toutes les commandes et calcule le prix total
+
+```py
+class Discount(Protocol):
+    def compute_discount(self, price: int) -> int:
+        """Computes the discount, given a price."""
+
+
+@dataclass
+class FixedDiscount:
+    discount: int = 0
+
+    def compute_discount(self, price: int) -> int:
+        return self.discount
+
+
+@dataclass
+class VariableDiscount:
+    discount_percentage: float = 0
+
+    def compute_discount(self, price: int) -> int:
+        return int(self.discount_percentage * price)
 ```
 
-Maintenant, DataProcessor dépend de l'abstraction Database, pas de l'implémentation spécifique. Nous pouvons facilement changer la base de données utilisée en passant une instance différente de Database à DataProcessor.
+Plusieurs classes qui permettent de calculer les promotion, pour information un protocol est dans son fonctionnement similaire à une classe abstraite (vous pourriez d’ailleurs en utiliser une à la place) en moins restrictif.
+```py
+class Order:
+    def __init__(self):
+        self.items: list[LineItem] = []
+        self.status: PaymentStatus = PaymentStatus.OPEN
+        self.discounts: list[Discount] = []
 
-# S.T.U.P.I.D
-Il y a aussi son contraire, ce qu’on appelle des anti-pattern à éviter à tout prix. S.T.U.P.I.D :
+    def add_item(self, name: str, quantity: int, price: int) -> None:
+        self.items.append(LineItem(name, quantity, price))
 
-- Singleton : Le principe Singleton consiste à créer des objets qui ne peuvent être instanciés qu'une seule fois. Cette approche rend le code moins testable et moins flexible, car les objets Singleton sont souvent difficile à simuler ou à remplacer lors des tests unitaires.
-- Tight Coupling : Le couplage étroit est une mauvaise pratique qui se produit lorsque les modules de code sont trop dépendants les uns des autres. Cela rend le code plus difficile à maintenir et à changer, car les modifications apportées à un module peuvent avoir des répercussions sur les autres modules qui en dépendent.
-- Untestability : L'impénétrabilité est une mauvaise pratique qui se produit lorsque le code est difficile à tester. Cela se produit généralement lorsque le code est mal structuré ou que les dépendances sont mal gérées, ce qui rend les tests unitaires difficiles à écrire et à exécuter.
-- Premature Optimization : L'optimisation prématurée est une mauvaise pratique qui se produit lorsqu'un développeur tente d'optimiser le code avant d'avoir identifié et résolu les problèmes de conception. Cela peut entraîner des modifications inutiles du code, ce qui le rend plus complexe et plus difficile à maintenir.
-- Indescriptive Naming : La désignation indescriptible est une mauvaise pratique qui consiste à utiliser des noms de variables, de fonctions et de classes qui ne sont pas explicites ou qui ne décrivent pas clairement leur fonction ou leur objectif. Cela peut rendre le code plus difficile à comprendre et à maintenir, en particulier pour les nouveaux développeurs qui ne sont pas familiers avec le code existant.
-- Duplication : La duplication est une mauvaise pratique qui se produit lorsqu'un développeur copie et colle du code d'un endroit à un autre plutôt que de créer une fonction ou une classe qui peut être réutilisée. Cela peut entraîner des problèmes de cohérence et de maintenabilité, car des modifications doivent être apportées à plusieurs endroits pour maintenir le code synchronisé.
+    def add_discount(self, discount: Discount) -> None:
+        self.discounts.append(discount)
+
+    @property
+    def total_price(self) -> int:
+        total = 0
+        for item in self.items:
+            total += item.total_price
+        total_discount = 0
+        for discount in self.discounts:
+            total_discount += discount.compute_discount(total)
+        return total - total_discount
+
+
+def create_order(items: list[LineItem], discounts: list[Discount]):
+    order = Order()
+    for item in items:
+        order.add_item(item.name, item.quantity, item.price)
+    for discount in discounts:
+        order.add_discount(discount)
+    return order
+```
+
+La classe Order qui va calculer le total.
+
+il y a beaucoup de classe qui sont générés par le fait que nous devions ajouter des réductions, ce qui rend le code beaucoup plus difficile à lire et comprendre,
+
+```py
+def main() -> None:
+    order = create_order(
+        [
+            LineItem("Keyboard", 1, 5000),
+            LineItem("SSD", 1, 15000),
+            LineItem("USB cable", 2, 500),
+        ],
+        [VariableDiscount(0.1), FixedDiscount(1000), VariableDiscount(0.05)],
+    )
+    print(f"The total price is: ${(order.total_price / 100):.2f}.")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Et finalement la fonction main qui assemble tout, personnellement, je trouve ce design très dur à comprendre, rien que la manière dont sont calculées les promotions n’est pas triviale à comprendre. Voyons comment nous pouvons le rendre plus simple.
+
+Les classes discounts sont dans notre code ne font que renvoyer des entiers à partir d’un autre entier, est-ce que cela est bien nécessaire de créer une classe pour quelque chose d’aussi simple ? Bien que nous ayons et allons apprendre plusieurs méthodes, leur but est le même, rendre notre code le plus clair et lisible possible et là ce n’est pas le cas.
+
+[code after](https://github.com/JonathanNdambaPro/code_adanced_course/blob/main/introduction/simplicity/KISS/kiss_after.py)
+
+```py
+from dataclasses import dataclass
+from enum import Enum, auto
+
+
+class PaymentStatus(Enum):
+    """Payment status"""
+
+    OPEN = auto()
+    PAID = auto()
+
+
+@dataclass
+class LineItem:
+    name: str
+    quantity: int
+    price: int
+
+    @property
+    def total_price(self) -> int:
+        return self.quantity * self.price
+
+
+class Order:
+    def __init__(self):
+        self.items: list[LineItem] = []
+        self.status: PaymentStatus = PaymentStatus.OPEN
+        self.fixed_discount: int = 0
+        self.variable_discount: float = 0.0
+
+    def add_item(self, item: LineItem) -> None:
+        self.items.append(item)
+
+    @property
+    def total_price(self) -> int:
+        sub_total = sum(item.total_price for item in self.items)
+        discount = int(self.fixed_discount + self.variable_discount * sub_total)
+        return sub_total - discount
+
+
+def main() -> None:
+    order = Order()
+    order.add_item(LineItem("Keyboard", 1, 5000))
+    order.add_item(LineItem("SSD", 1, 15000))
+    order.add_item(LineItem("USB cable", 2, 500))
+    order.variable_discount = 0.15
+    order.fixed_discount = 1000
+
+    print(f"The total price is: ${(order.total_price / 100):.2f}.")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Notre code ici est beaucoup plus simple est aussi beaucoup plus court :
+
+- Order prend la responsabilité qu’avaient les classes discounts avec les attributs self.fixed\_discount et self.variable\_discount
+- Le calcule de discount est aussi pris en compte ce qui rend le code beaucoup plus compréhensible.
+
+Notre classe à plus de responsabilités, mais est beaucoup plus clair et simple à communiquer entre développeur. Lors du choix de vos optimisation, il peut arriver qu’une approche soutenue par une méthode ne soit pas celle qui rende le code le plus élégant, c’est à vous de déterminer quel solution est la “moins pire”, ce concept de “moins pire” est important, car dans le code en général la meilleure solution n’existe pas ce sont souvent des choix avec des avantages et inconvénient.
+
+Tout ça peu sembler compliqué, mais garder en tête que vous pouvez le faire par incrémentation, d’abord une tentative, puis une autre et ainsi de suite jusqu’à ce que vous ayez un refactoring suffisamment simple pour être maintenu et compris par n’importe qui.
+
+## YAGNI (You ain’t gonna need it)
+
+On dit souvent “qu’on ne peut pas prédire le futur”, c’est faux. Prédire c’est émettre des probabilité sur des possibilités futures, la météo le fait tous les jour par exemple.
+
+Ce qu’on ne peut pas par contre, c'est “savoir le futur”, avoir une certitude sur ce qui va se passer, et en software engineering, c'est un problème.
+
+Plus vous essayerez de prédire des choses plus vous aller rendre votre code complexe car plus de chose à tester plus de fonctionnalité à ajouter et un code plus dur à maintenir.
+
+L’implémentation code doit être justifiée, nous devons faire le minimum de chose possible pour gagner du temps, les différentes méthodes que nous avons vues sont justifiées parce qu'elles rendent le code plus simple et dans le futur les développeurs qui verront votre code le comprendrons quasiment instantanément et ne perdons pas de temps. L’ajout de features qui ne sont pas demandés et qui peut être ne servirons à rien est elle par contre une perte de temps.
